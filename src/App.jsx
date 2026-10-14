@@ -1,11 +1,13 @@
+import Admin from './Admin.jsx';
+import Article, { mediaUrl } from './Article.jsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity, ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Bookmark, ChevronDown,
   Command, FileText, Fingerprint, FlaskConical, FolderOpen, Gauge, Grid2X2,
   Download, Eye, EyeOff, ExternalLink, LockKeyhole, Menu, Radar, Search, Shield, ShieldCheck, X, Code2,
 } from 'lucide-react';
-import { collections as localCollections, groups, solutions as localSolutions } from './data/catalog.js';
-import { areaDetails, productDetails, sourceOnlySolutions } from './data/solutionDetails.js';
+import { groups } from './data/catalog.js';
+
 
 const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
 const apiUrl = path => `${API_BASE}${path}`;
@@ -140,7 +142,7 @@ function OfficePreview({ document }) {
 function BrandMark({ item }) {
   const [failed, setFailed] = useState(false);
   const slug = brandIconSlugs[item.id];
-  const logo = localBrandLogos[item.id] || (slug ? `https://cdn.simpleicons.org/${slug}` : '');
+  const logo = mediaUrl(item.logoUrl || '') || localBrandLogos[item.id] || (slug ? `https://cdn.simpleicons.org/${slug}` : '');
   return <span className={`wordmark ${item.tone} ${item.mark.length > 8 ? 'long' : ''} ${logo && !failed ? 'has-logo' : ''} brand-${item.id}`}>
     {logo && !failed && <img src={logo} alt={`${item.name} logo`} loading="lazy" onError={() => setFailed(true)} />}
     {(!logo || failed) && item.mark}
@@ -224,7 +226,7 @@ function CodeRain() {
 }
 
 function LoginScreen({ status, onLogin }) {
-  const [username, setUsername] = useState('member');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -236,7 +238,7 @@ function LoginScreen({ status, onLogin }) {
       const response = await fetch(apiUrl('/api/auth/login'), { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, password }) });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.error || 'Chưa đăng nhập được.');
-      setPassword(''); onLogin();
+      setPassword(''); onLogin(data.user);
     } catch (error) { setMessage(error.message || 'Không kết nối được máy chủ.'); }
     finally { setBusy(false); }
   }
@@ -254,7 +256,7 @@ function LoginScreen({ status, onLogin }) {
       <div className="login-side-code" aria-hidden="true">0x7F&nbsp; AUTH_GATE<br/>0xA4&nbsp; IDENTITY<br/>0xD1&nbsp; SESSION_LOCK<br/>0x09&nbsp; ACCESS_NODE</div>
     </section>
     <div className="login-card"><div className="login-card-top"><span className="login-brand"><span className="brand-mark"><ShieldCheck size={20}/></span><span><b>GIẢI PHÁP</b><small>AN NINH MẠNG</small></span></span><span className={`gateway-state ${status === 'unavailable' ? 'offline' : ''}`}><i/>{status === 'unavailable' ? 'OFFLINE' : status === 'checking' ? 'CHECKING' : 'GATEWAY'}</span></div><h1>Login now! <em>Bro</em></h1><p className="login-intro">Đăng nhập để tra cứu thư viện giải pháp.</p>
-    {status === 'unavailable' ? <div className="login-message">Chưa kết nối được máy chủ xác thực. Kiểm tra API rồi tải lại trang nhé.</div> : status === 'unconfigured' ? <div className="login-message">Máy chủ chưa cấu hình thông tin đăng nhập. Hãy đặt <code>APP_USERNAME</code> và <code>APP_PASSWORD</code> trong file môi trường server.</div> : <form onSubmit={submit}><label>TÊN ĐĂNG NHẬP<input autoComplete="username" value={username} onChange={event => setUsername(event.target.value)} required/></label><label>MẬT KHẨU<span className="login-password-wrap"><input autoComplete="current-password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required/><button className="login-password-toggle" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'} aria-pressed={showPassword}>{showPassword ? <EyeOff size={16}/> : <Eye size={16}/>}</button></span></label>{message && <div className="login-message" role="alert">{message}</div>}<button disabled={busy || status === 'checking'}><LockKeyhole size={15}/>{busy ? 'Đang kiểm tra…' : 'Đăng nhập'}<ArrowRight size={15}/></button></form>}
+    {status === 'unavailable' ? <div className="login-message">Chưa kết nối được máy chủ xác thực. Kiểm tra API rồi tải lại trang nhé.</div> : status === 'unconfigured' ? <div className="login-message">Máy chủ chưa khởi tạo tài khoản. Chạy <code>npm run db:setup</code> trên server để tạo quản trị viên đầu tiên.</div> : <form onSubmit={submit}><label>TÊN ĐĂNG NHẬP<input autoComplete="username" value={username} onChange={event => setUsername(event.target.value)} required/></label><label>MẬT KHẨU<span className="login-password-wrap"><input autoComplete="current-password" type={showPassword ? 'text' : 'password'} value={password} onChange={event => setPassword(event.target.value)} required/><button className="login-password-toggle" type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'} aria-pressed={showPassword}>{showPassword ? <EyeOff size={16}/> : <Eye size={16}/>}</button></span></label>{message && <div className="login-message" role="alert">{message}</div>}<button disabled={busy || status === 'checking'}><LockKeyhole size={15}/>{busy ? 'Đang kiểm tra…' : 'Đăng nhập'}<ArrowRight size={15}/></button></form>}
     <div className="login-foot"><Shield size={14}/> Phiên truy cập tự hết hạn sau 12 giờ <span>·</span> COOKIE HTTPONLY</div></div>
   </div><div className="login-corner login-corner-a" aria-hidden="true">SECURITY OPERATIONS / ACCESS CONTROL</div><div className="login-protected-by" aria-label="Protected by Cloudflare"><span>Protected by</span><svg viewBox="0 0 64 40" aria-hidden="true" focusable="false"><path fill="currentColor" d="M51.4 17.1a14.8 14.8 0 0 0-28.5-3.7 11.3 11.3 0 0 0-2.5-.3A11.4 11.4 0 0 0 9 24.5c0 .5 0 1 .1 1.5H5.3A5.3 5.3 0 0 0 0 31.3a5.3 5.3 0 0 0 5.3 5.3h42.5a10.7 10.7 0 0 0 3.6-19.5ZM47.8 32H14a7.6 7.6 0 0 1-7.5-7.5 7.6 7.6 0 0 1 12.8-5.6l1.9 1.8.8-2.5a11 11 0 0 1 21.3 2.4l.2 1.7 1.7.1a5 5 0 0 1 2.6 9.6Z"/><path fill="currentColor" d="M56.4 23.4a7.6 7.6 0 0 0-1.9.2 9 9 0 0 1-6.7 10.8h9a5.5 5.5 0 0 0-.4-11Z"/></svg><strong>Cloudflare</strong></div></main>;
 }
@@ -305,9 +307,9 @@ function SolutionDetailPage({ entry, area, profile, sourceOnly, relatedItems, on
   const [documentState, setDocumentState] = useState(entry ? 'loading' : 'idle');
   const details = area || sourceOnly || {};
   const title = entry?.name || sourceOnly?.title || 'Giải pháp';
-  const summary = profile?.summary || entry?.desc || sourceOnly?.summary || details.summary;
-  const sourceUrl = details.sourceUrl;
-  const partners = profile?.partners || details.partners || [];
+  const summary = entry?.desc || profile?.summary || sourceOnly?.summary || details.summary;
+  const sourceUrl = entry?.sourceUrl ?? details.sourceUrl;
+  const partners = entry?.partners || profile?.partners || details.partners || [];
   const capabilities = profile?.capabilities || details.capabilities || [];
   const reviewQuestions = profile?.questions || [
     ['Bài toán cần xử lý', 'Hệ thống, dữ liệu hoặc quy trình nào đang cần được bảo vệ hay cải thiện?'],
@@ -366,7 +368,7 @@ function SolutionDetailPage({ entry, area, profile, sourceOnly, relatedItems, on
 
       <div className="solution-detail-columns">
         <div className="solution-detail-main">
-          <section className="detail-content-panel" id="tong-quan">
+          {entry?.body !== undefined ? <section className="detail-content-panel" id="tong-quan"><Article body={entry.body}/></section> : <><section className="detail-content-panel" id="tong-quan">
             <div className="detail-section-label"><span>01</span> TỔNG QUAN</div>
             <h2>{profile?.headline || details.headline || 'Giải pháp này có vai trò gì?'}</h2>
             {(profile?.intro || [details.summary]).filter(Boolean).map((paragraph, index) => <p className="detail-area-copy" key={index}>{paragraph}</p>)}
@@ -393,6 +395,7 @@ function SolutionDetailPage({ entry, area, profile, sourceOnly, relatedItems, on
             <p className="detail-editorial-note">Đây là bộ câu hỏi tham khảo để đánh giá nhu cầu; không thay thế tài liệu kỹ thuật hoặc xác nhận tính năng từ hãng.</p>
           </section>
 
+          </>}
           <section className="detail-story-panel detail-documents-panel" id="tai-lieu">
             <div className="detail-section-label"><span>04</span> ĐỌC TIẾP TRONG THƯ VIỆN</div>
             <div className="detail-related-heading"><div><h2>Tài liệu của {title}</h2><p>Mở xem trước ngay trong thư viện hoặc mở file bằng ứng dụng phù hợp.</p></div><span>{entry?.documentCount ?? 0}</span></div>
@@ -411,7 +414,7 @@ function SolutionDetailPage({ entry, area, profile, sourceOnly, relatedItems, on
         </div>
 
         <aside className="solution-detail-aside">
-          <nav className="detail-toc" aria-label="Mục lục bài viết"><b>TRONG BÀI VIẾT</b><a href="#tong-quan">Tổng quan</a><a href="#nang-luc">Năng lực & phạm vi</a><a href="#danh-gia">Gợi ý đánh giá</a><a href="#tai-lieu">Tài liệu trong thư viện</a>{relatedItems.length > 0 && <a href="#lien-quan">Giải pháp liên quan</a>}</nav>
+          <nav className="detail-toc" aria-label="Mục lục bài viết"><b>TRONG BÀI VIẾT</b><a href="#tong-quan">Tổng quan</a>{entry?.body === undefined && <><a href="#nang-luc">Năng lực & phạm vi</a><a href="#danh-gia">Gợi ý đánh giá</a></>}<a href="#tai-lieu">Tài liệu trong thư viện</a>{relatedItems.length > 0 && <a href="#lien-quan">Giải pháp liên quan</a>}</nav>
           <section className="detail-aside-panel">
             <div className="detail-section-label"><span>06</span> HÃNG ĐƯỢC ĐỀ CẬP</div>
             <h2>Các hãng trong danh mục</h2>
@@ -436,6 +439,7 @@ function SolutionDetailPage({ entry, area, profile, sourceOnly, relatedItems, on
 function App() {
   const searchInputRef = useRef(null);
   const [authStatus, setAuthStatus] = useState('checking');
+  const [currentUser, setCurrentUser] = useState(null);
   const [active, setActive] = useState('all');
   const [query, setQuery] = useState('');
   const [saved, setSaved] = useState(() => {
@@ -477,7 +481,7 @@ function App() {
   useEffect(() => {
     let cancelled = false;
     fetch(apiUrl('/api/auth/session'), { credentials: 'include' }).then(response => response.json())
-      .then(data => { if (!cancelled) setAuthStatus(!data.configured ? 'unconfigured' : data.authenticated ? 'authenticated' : 'login'); })
+      .then(data => { if (!cancelled) { setCurrentUser(data.user || null); setAuthStatus(!data.configured ? 'unconfigured' : data.authenticated ? 'authenticated' : 'login'); } })
       .catch(() => { if (!cancelled) setAuthStatus('unavailable'); });
     return () => { cancelled = true; };
   }, []);
@@ -504,8 +508,8 @@ function App() {
     return () => window.removeEventListener('keydown', handleShortcut);
   }, []);
 
-  const allSolutions = useMemo(() => localSolutions.map(item => ({ ...item, ...(remoteEntries.find(remote => remote.id === item.id) || {}), kind: 'solution' })), [remoteEntries]);
-  const allCollections = useMemo(() => localCollections.map(item => ({ ...item, ...(remoteEntries.find(remote => remote.id === item.id) || {}), kind: 'collection' })), [remoteEntries]);
+  const allSolutions = useMemo(() => remoteEntries.filter(item => item.kind === 'solution' && !item.featured), [remoteEntries]);
+  const allCollections = useMemo(() => remoteEntries.filter(item => item.kind === 'collection'), [remoteEntries]);
   const visible = useMemo(() => {
     const q = query.trim().toLocaleLowerCase('vi');
     return allSolutions.filter(item => (active === 'all' || item.group === active) && (!showSaved || saved.includes(item.id)) && (!q || `${item.name} ${item.desc} ${item.tags.join(' ')}`.toLocaleLowerCase('vi').includes(q)))
@@ -537,7 +541,7 @@ function App() {
 
   async function logout() {
     try { await fetch(apiUrl('/api/auth/logout'), { method: 'POST', credentials: 'include' }); } catch {}
-    setAuthStatus('login'); setApiOnline(false); setRemoteEntries([]); setPreviewDoc(null); setDetailEntry(null);
+    setCurrentUser(null); setAuthStatus('login'); setApiOnline(false); setRemoteEntries([]); setPreviewDoc(null); setDetailEntry(null);
   }
 
   async function openEntry(entry) {
@@ -578,13 +582,14 @@ function App() {
     <span className="file-type">{doc.extension || 'FILE'}</span><span className="file-info"><b>{doc.name}</b><small>{doc.entryName ? `${doc.entryName} · ` : ''}{doc.folder || 'Thư mục gốc'}{doc.size ? ` · ${formatSize(doc.size)}` : ''}</small></span><Eye size={16}/>
   </button>;
 
-  const detailSolutionEntry = allSolutions.find(item => item.id === solutionPageId);
-  const detailSourceOnly = sourceOnlySolutions[solutionPageId];
-  const detailArea = detailSolutionEntry ? areaDetails[detailSolutionEntry.group] : detailSourceOnly;
+  const detailSolutionEntry = remoteEntries.find(item => item.id === solutionPageId);
+  const detailSourceOnly = null;
+  const detailArea = detailSolutionEntry ? { ...(detailSolutionEntry.area || {}), label: groups.find(g => g.id === detailSolutionEntry.group)?.short } : null;
   const relatedDetailItems = detailSolutionEntry ? allSolutions.filter(item => item.group === detailSolutionEntry.group && item.id !== detailSolutionEntry.id).slice(0, 6) : [];
 
-  if (authStatus !== 'authenticated') return <LoginScreen status={authStatus} onLogin={() => setAuthStatus('authenticated')}/>;
-  if (solutionPageId && (detailSolutionEntry || detailSourceOnly)) return <SolutionDetailPage entry={detailSolutionEntry} area={detailArea} profile={productDetails[solutionPageId]} sourceOnly={detailSourceOnly} relatedItems={relatedDetailItems} onOpenEntry={openEntryFromSolution} onOpenDocument={setPreviewDoc} onOpenSolution={openSolutionPage} onLogout={logout}/>;
+  if (authStatus !== 'authenticated') return <LoginScreen status={authStatus} onLogin={user => { setCurrentUser(user); setAuthStatus('authenticated'); }}/>;
+  if (window.location.pathname.replace(/\/$/, '') === '/admin') return <Admin user={currentUser} onLogout={logout}/>;
+  if (solutionPageId && (detailSolutionEntry || detailSourceOnly)) return <SolutionDetailPage entry={detailSolutionEntry} area={detailArea} profile={detailSolutionEntry?.profile} sourceOnly={detailSourceOnly} relatedItems={relatedDetailItems} onOpenEntry={openEntryFromSolution} onOpenDocument={doc => { setSolutionPageId(''); window.location.hash='#catalog'; setPreviewDoc(doc); }} onOpenSolution={openSolutionPage} onLogout={logout}/>;
 
   return <div className="app-shell">
     <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
@@ -592,9 +597,9 @@ function App() {
       <div className="workspace"><span className="workspace-icon">P</span><span><b>Thư viện nội bộ</b><small>Tài liệu giải pháp</small></span><ChevronDown size={15}/></div>
       <div className="side-label">DANH MỤC</div>
       <nav className="nav-list">{groups.map(group => { const Icon = icons[group.icon] || Shield; return <button className={`nav-item ${active === group.id && !showSaved ? 'selected' : ''}`} key={group.id} onClick={() => { setActive(group.id); setShowSaved(false); setMobileOpen(false); }}><Icon size={16}/><span>{group.short}</span>{group.id === 'all' && <small>{allSolutions.length}</small>}</button>; })}<button className={`nav-item ${showSaved ? 'selected' : ''}`} onClick={() => { setActive('all'); setShowSaved(true); setMobileOpen(false); }}><Bookmark size={16}/><span>Đã lưu</span><small>{saved.length}</small></button></nav>
-      <div className="sidebar-spacer"/>
+      <div className="sidebar-spacer"/>{['admin','editor'].includes(currentUser?.role) && <a className="nav-item" href="/admin"><ShieldCheck size={16}/> Quản trị thư viện</a>}
       <div className="side-note"><div className="note-icon"><FolderOpen size={16}/></div><b>{apiOnline ? `${totalDocuments} tài liệu đã lập chỉ mục` : 'Thư mục tài liệu'}</b><p>{apiOnline ? `Lần quét gần nhất ${new Date(indexedAt).toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'})}.` : 'Kết nối máy chủ để tìm và mở file trong Solutions.'}</p><span className={`api-state ${apiOnline ? 'online' : ''}`}><i/>{apiOnline ? 'API ĐANG KẾT NỐI' : 'API CHƯA KẾT NỐI'}</span></div>
-      <div className="profile"><div className="avatar">P</div><span><b>Thành viên</b><small>Truy cập nội bộ</small></span><span className="online-dot"/></div>
+      <div className="profile"><div className="avatar">P</div><span><b>{currentUser?.displayName || 'Thành viên'}</b><small>Truy cập nội bộ</small></span><span className="online-dot"/></div>
     </aside>
     {mobileOpen && <button className="scrim" aria-label="Đóng menu" onClick={() => setMobileOpen(false)}/>}
     <main id="top" className="main-area">
@@ -607,7 +612,7 @@ function App() {
         <section className="metrics"><div className="metric"><span className="metric-icon"><Grid2X2 size={15}/></span><span><b>{allSolutions.length.toString().padStart(2,'0')}</b><small>GIẢI PHÁP</small></span></div><i className="metric-separator"/><div className="metric"><span className="metric-icon"><Shield size={15}/></span><span><b>{groups.length-1}</b><small>NHÓM CHUYÊN MÔN</small></span></div><i className="metric-separator"/><div className="metric"><span className="metric-icon"><FileText size={15}/></span><span><b>{apiOnline ? totalDocuments : '—'}</b><small>TÀI LIỆU TRONG THƯ MỤC</small></span></div><div className="metrics-note"><Activity size={14}/>{apiOnline ? 'Danh mục đồng bộ từ Solutions' : 'Cần kết nối API để tra cứu file thật'}</div></section>
         <section id="catalog" className="catalog"><div className="section-heading"><div><div className="section-kicker">DANH MỤC GIẢI PHÁP <i/></div><h2>{active === 'all' ? (showSaved ? 'Giải pháp đã lưu' : 'Khám phá theo lĩnh vực') : selectedGroup?.name}<span className="result-count">{visible.length.toString().padStart(2,'0')}</span></h2><p>{showSaved ? 'Những giải pháp bạn đã đánh dấu để xem lại.' : 'Chọn lĩnh vực để xem các giải pháp đang có trong thư viện.'}</p></div><label className="sort-control"><span>SẮP XẾP</span><select value={sort} onChange={event => setSort(event.target.value)}><option>A–Z</option><option>Z–A</option></select><ChevronDown size={13}/></label></div>
           <div className="category-strip">{groups.slice(1).map(group => { const Icon = icons[group.icon] || Shield; const count = allSolutions.filter(item => item.group === group.id).length; return <button key={group.id} className={`category-chip ${active === group.id ? 'active' : ''}`} onClick={() => { setShowSaved(false); setActive(active === group.id ? 'all' : group.id); }}><Icon size={13}/>{group.short}<span>{count}</span></button>; })}</div>
-          <a className="source-area-link" href="#/giai-phap/remote-surveillance"><span className="source-area-icon"><Radar size={16}/></span><span><b>Giám sát đường biên &amp; bờ biển</b><small>Hệ thống camera, radar và AI được ASIC giới thiệu</small></span><ArrowUpRight size={16}/></a>
+          {remoteEntries.filter(item => item.featured).map(item => <a key={item.id} className="source-area-link" href={'#/giai-phap/' + item.id}><span className="source-area-icon"><Radar size={16}/></span><span><b>{item.name}</b><small>{item.desc}</small></span><ArrowUpRight size={16}/></a>)}
           {visible.length ? <div className="solution-grid">{visible.map((item,index) => <article className="solution-card" tabIndex={0} aria-label={`Xem chi tiết ${item.name}`} onClick={event => { if (event.target.closest('button, a')) return; openSolutionPage(item); }} onKeyDown={event => { if (event.target === event.currentTarget && (event.key === 'Enter' || event.key === ' ')) { event.preventDefault(); openSolutionPage(item); } }} key={item.id} style={{'--delay':`${Math.min(index*18,200)}ms`}}>
             <div className="card-meta"><span>{groups.find(group => group.id === item.group)?.short}</span><code>MÃ / {String(index+1).padStart(2,'0')}</code></div>
             <div className="card-top"><BrandMark item={item}/><button className={`save-button ${saved.includes(item.id)?'saved':''}`} onClick={() => toggleSave(item.id)} aria-label={saved.includes(item.id) ? 'Bỏ lưu giải pháp' : 'Lưu giải pháp'} aria-pressed={saved.includes(item.id)}><Bookmark size={15} fill={saved.includes(item.id) ? 'currentColor' : 'none'}/></button></div>

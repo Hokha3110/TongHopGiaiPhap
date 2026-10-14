@@ -23,6 +23,9 @@ cloudflared/
 
 # Private solution documents stay local and are copied to the Linux host separately.
 /Solutions/
+/storage/
+/backups/
+/coverage/
 
 # Logs and temporary files
 *.log

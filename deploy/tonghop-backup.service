@@ -1,0 +1,7 @@
+[Unit]
+Description=Back up solution library database and documents
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/tong-hop-giai-phap/deploy/backup.sh
+UMask=0077

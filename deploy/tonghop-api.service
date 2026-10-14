@@ -1,0 +1,24 @@
+[Unit]
+Description=ASIC solution library API
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=linuxk
+Group=linuxk
+WorkingDirectory=/opt/tong-hop-giai-phap
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/node server/index.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=150
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/tong-hop-giai-phap/storage
+
+[Install]
+WantedBy=multi-user.target

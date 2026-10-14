@@ -1,63 +1,60 @@
 # Thư viện giải pháp an ninh mạng
 
-Frontend React/Vite để tra cứu các giải pháp trong `Solutions/`. API Node.js lập chỉ mục tài liệu và gửi file trực tiếp từ thư mục gốc; tài liệu không được chép vào `dist` hay đưa vào Git.
+React/Vite cho thư viện và dashboard `/admin`, API Node.js, PostgreSQL cho nội dung/tài khoản và ổ đĩa Linux cho file tài liệu. Giao diện thư viện, trang login và luồng xem trước được giữ; danh mục thành viên lấy từ nội dung đã xuất bản trong database.
 
-## Chạy tại Windows
+## Triển khai trên Linux
 
-Sau khi clone, cài dependencies một lần:
+Xem [DEPLOY-LINUX.md](DEPLOY-LINUX.md). Hướng dẫn tiếp tục từ thư mục `/opt/tong-hop-giai-phap/Solutions` đã chép, gồm tạo PostgreSQL, nhập dữ liệu cũ, admin đầu tiên, systemd, Cloudflare Tunnel, FE tại kaliot.online và backup hằng ngày.
 
-```powershell
+## Chạy local
+
+Cần Node.js 22.12+ hoặc Node.js 24 và PostgreSQL đang chạy. Tạo database riêng cho môi trường local. Cài dependencies:
+
+```sh
 npm ci
 ```
 
-Từ thư mục repo, chạy cả giao diện và API bằng một lệnh:
+Tạo `.env` tại gốc repo (thay thông tin database/password bằng giá trị thật):
 
-```powershell
+```dotenv
+DATABASE_URL=postgresql://tonghop:YOUR_LOCAL_DB_PASSWORD@127.0.0.1:5432/tonghop
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=YOUR_ADMIN_PASSWORD_AT_LEAST_12_CHARS
+HOST=127.0.0.1
+PORT=8787
+NODE_ENV=development
+COOKIE_SECURE=false
+COOKIE_SAME_SITE=Lax
+CORS_ORIGIN=http://localhost:5173,http://127.0.0.1:5173
+```
+
+Nếu không đặt SOLUTIONS_ROOT và UPLOADS_ROOT, API đọc `Solutions/` và ghi file mới vào `storage/uploads/` dưới repo. Các thư mục này cùng `.env` được Git bỏ qua. Nếu không có tài liệu cũ, tạo thư mục Solutions rỗng trước khi setup.
+
+```sh
+npm run db:setup
 npm run dev:all
 ```
 
-Lần đầu, tạo `.env` ở thư mục dự án và đặt thông tin đăng nhập:
+Mở địa chỉ Vite hiển thị, đăng nhập bằng admin vừa tạo rồi vào `/admin`. Xóa ADMIN_USERNAME/ADMIN_PASSWORD khỏi `.env` sau lần setup đầu tiên. Tài khoản và phiên đăng nhập được lưu trong PostgreSQL; APP_USERNAME/APP_PASSWORD của bản cũ không còn dùng.
 
-```env
-APP_USERNAME=member
-APP_PASSWORD=thay-bang-mat-khau-manh-cua-ban
-```
+## Nội dung và tài liệu
 
-Đây là cấu hình backend; không đặt mật khẩu trong biến `VITE_*`. `.env` đã được Git bỏ qua và không được đưa lên repository. Sau khi sửa, khởi động lại `npm run dev:all` để áp dụng. `.env.example` là mẫu dành cho cấu hình triển khai, không cần chép nguyên xi khi chạy local.
+- Admin quản lý tài khoản, quyền, nội dung, tài liệu và nhật ký. Editor quản lý nội dung/tài liệu. Member tra cứu và tải tài liệu đã xuất bản.
+- Nội dung hỗ trợ Markdown, tải logo/ảnh, xem trước, lưu nháp, xuất bản, gỡ xuất bản và thùng rác. HTML trong bài viết không được thực thi.
+- Nhập dữ liệu cũ từ danh mục trong source và Solutions bằng `npm run db:setup`; các lần sau dùng nút Nhập từ Solutions. Nhập lại không ghi đè chỉnh sửa trong database hoặc khôi phục tài liệu đã xóa.
+- Tải file mới tối đa 90 MB, đổi tên hiển thị/chuyển danh mục, thay phiên bản, khôi phục phiên bản và thùng rác. File gốc và phiên bản cũ vẫn được giữ trên đĩa.
+- Thư mục member, khách hàng/dự án, bản nháp và các mục DevSecOps/A06 đã ẩn tiếp tục được loại khỏi bước nhập cũ.
+- PDF, ảnh, video và file văn bản xem trực tiếp; DOCX dùng Mammoth trong iframe sandbox. Các định dạng Office khác dùng LibreOffice trên backend để chuyển PDF. Cài LibreOffice hoặc đặt LIBREOFFICE_PATH trỏ tới soffice để xem PPTX/XLSX.
 
-Mở địa chỉ Vite hiển thị trên terminal (thường là `http://localhost:5173`). API đọc thư mục `Solutions/` ngay trong repo và quét lại mỗi 5 phút. Nếu tài liệu nằm ở đường dẫn khác, đặt `SOLUTIONS_ROOT` trước khi chạy.
-
-Muốn mở giao diện riêng, `npm run dev` vẫn chạy được; tìm kiếm và mở tài liệu cần API nên yêu cầu này không nối file thật.
-
-## Nội dung được lập chỉ mục
-
-- 25 thư mục giải pháp có tài liệu được hiển thị từ `Solutions/`.
-- 7 thư viện dùng chung: kiến trúc tổng thể, giải pháp theo cấp độ, Cyber Range Keysight, sales kits, bài trình bày và tài liệu tham khảo chung.
-- Định dạng được hỗ trợ gồm PDF, Office, hình ảnh, video và file nén.
-- Bấm vào tài liệu để xem ngay PDF, ảnh, video, file văn bản/CSV và DOCX; DOCX được dựng thành bản xem nhanh ngay trong trình duyệt, cách trình bày có thể khác Word. DOC/RTF, Excel, PowerPoint và OpenDocument được API chuyển sang PDF để xem trong web; file Office vẫn có nút tải xuống. File nén tải về để mở bằng ứng dụng trên máy.
-- Để xem trước DOC/RTF, Excel, PowerPoint và OpenDocument, cài LibreOffice trên máy chạy API để có lệnh `soffice` (hoặc đặt `LIBREOFFICE_PATH`). Khi chưa có LibreOffice, DOCX vẫn xem được; các định dạng Office còn lại báo rõ yêu cầu máy chủ và cho tải file.
-
-Trên Ubuntu, cài bộ chuyển đổi bằng:
+## Build và kiểm thử
 
 ```sh
-sudo apt-get update
-sudo apt-get install -y libreoffice
-```
-- Không lập chỉ mục khu vực dành riêng cho member, thư mục khách hàng/dự án và bản nháp, tránh trộn nội dung cá nhân hoặc theo khách hàng vào thư viện dùng chung.
-- Các thư mục `01. DevSecOps` và `26. A06` đang ẩn khỏi danh mục; thư mục và file gốc vẫn được giữ trên ổ đĩa.
-
-Đợt kiểm kê hiện tại tìm thấy **308 tài liệu** trong 25 giải pháp có tài liệu và 7 bộ sưu tập dùng chung.
-
-## Build frontend
-
-```sh
+npm test
 npm run build
 ```
 
-Thư mục đầu ra là `dist`. Không đưa `Solutions/` vào build output. API cần chạy trên máy chủ có quyền đọc thư mục tài liệu.
+Kiểm thử chạy API thật trên localhost với PostgreSQL nhúng PGlite và thư mục fixture tạm. Bao phủ phân quyền, cookie phiên, lưu nháp/xuất bản, nhập lại không ghi đè, tải/thay/khôi phục tài liệu, thu hồi phiên và nhật ký. Không dùng database thật. Cần kiểm tra PostgreSQL, LibreOffice và dịch vụ trên Linux sau khi triển khai.
 
-## Deploy frontend và API
+Build FE tạo `dist/`. Đặt VITE_API_BASE trong môi trường build Cloudflare thành `https://api.kaliot.online`, không đặt mật khẩu/database trong biến VITE_*. Sau khi đổi URL API, build/deploy lại FE.
 
-Đặt `VITE_API_BASE` thành URL API trước khi build frontend, đồng thời đặt `CORS_ORIGIN` trên API bằng đúng origin của website. Bảo vệ cả website lẫn API bằng cùng cổng xác thực nội bộ. API mặc định chỉ lắng nghe `127.0.0.1`; khi nối Cloudflare Pages với Linux server, dùng reverse proxy/tunnel và xác thực nội bộ (ví dụ Cloudflare Access hoặc VPN). Không mở API trực tiếp ra Internet.
-
-Ứng dụng cũng có màn hình đăng nhập riêng. Backend đọc `APP_USERNAME` và `APP_PASSWORD` từ `.env` hoặc biến môi trường; mật khẩu không được gửi vào bundle frontend. Sau đăng nhập, API cấp cookie `HttpOnly` 12 giờ và yêu cầu cookie đó cho danh mục, tìm kiếm, xem trước và tải tài liệu. Trên Linux, đặt hai biến này trong file `.env` chỉ đọc được bởi tài khoản dịch vụ, hoặc cấu hình qua systemd `EnvironmentFile`. Không commit file này. Nếu website và API ở hai site khác nhau, phục vụ cả hai qua HTTPS, đặt `COOKIE_SECURE=true`, `COOKIE_SAME_SITE=None`, và khai báo chính xác origin website trong `CORS_ORIGIN`.
+Đợt kiểm tra dependency hiện có 3 cảnh báo mức moderate trong chuỗi Mammoth → argparse → sprintf-js của phần xem DOCX cũ. npm đề xuất hạ Mammoth về bản rất cũ, nên chưa áp dụng thay đổi phá tương thích này. Các thư viện PostgreSQL, upload và Markdown mới không nằm trong cảnh báo đó.
