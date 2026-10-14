@@ -594,7 +594,7 @@ function App() {
   return <div className="app-shell">
     <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
       <a className="brand brand-asic" href="#top" onClick={() => setMobileOpen(false)}><span className="brand-asic-logo"><img src="/logos/logo-ASIC.png" alt="ASIC CyberSecurity"/></span></a>
-      <div className="workspace"><span className="workspace-icon">P</span><span><b>Thư viện nội bộ</b><small>Tài liệu giải pháp</small></span><ChevronDown size={15}/></div>
+      <div className="workspace"><span className="workspace-icon workspace-asic-icon"><img src="/logos/logo-ASIC.png" alt="ASIC"/></span><span><b>ASIC Library</b><small>Kho tài liệu nội bộ</small></span></div>
       <div className="side-label">DANH MỤC</div>
       <nav className="nav-list">{groups.map(group => { const Icon = icons[group.icon] || Shield; return <button className={`nav-item ${active === group.id && !showSaved ? 'selected' : ''}`} key={group.id} onClick={() => { setActive(group.id); setShowSaved(false); setMobileOpen(false); }}><Icon size={16}/><span>{group.short}</span>{group.id === 'all' && <small>{allSolutions.length}</small>}</button>; })}<button className={`nav-item ${showSaved ? 'selected' : ''}`} onClick={() => { setActive('all'); setShowSaved(true); setMobileOpen(false); }}><Bookmark size={16}/><span>Đã lưu</span><small>{saved.length}</small></button></nav>
       <div className="sidebar-spacer"/>{['admin','editor'].includes(currentUser?.role) && <a className="nav-item" href="/admin"><ShieldCheck size={16}/> Quản trị thư viện</a>}

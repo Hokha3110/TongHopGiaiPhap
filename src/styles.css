@@ -25,9 +25,11 @@ body { color: #e8f0f2; font-size: 14px; line-height: 1.55; background: #080e14; 
 .brand-mark { width: 39px; height: 39px; border-radius: 12px; background: linear-gradient(145deg, #bff36d, #73d9b7); color: #09201f; border: 0; box-shadow: 0 5px 22px #8de7bb25; }
 .brand b { font-size: 13px; letter-spacing: 1.2px; }
 .brand small { color: #8fa5ad; font-size: 9px; letter-spacing: 1.1px; }
-.brand-asic { min-height: 58px; }
-.brand-asic-logo { display:block; width:158px; height:58px; }
-.brand-asic-logo img { display:block; width:100%; height:100%; object-fit:contain; object-position:left center; filter:drop-shadow(0 0 12px #e8445426); }
+.brand-asic { min-height: 58px; justify-content:center; padding-inline:0; }
+.brand-asic-logo { display:block; width:178px; height:58px; }
+.brand-asic-logo img { display:block; width:100%; height:100%; object-fit:contain; object-position:center; filter:drop-shadow(0 0 12px #e8445426); }
+.workspace-asic-icon { overflow:hidden; padding:3px; background:#f5f8f7; }
+.workspace-asic-icon img { display:block; width:100%; height:100%; object-fit:contain; object-position:center; }
 .workspace { margin: 29px 0 27px; padding: 12px; border-radius: 11px; border-color: #2a3e48; background: linear-gradient(120deg, #13242b, #0d171e); }
 .workspace-icon { width: 34px; height: 34px; border-radius: 9px; background: #c8f477; color: #132219; }
 .workspace b, .profile b { font-size: 12px; }
