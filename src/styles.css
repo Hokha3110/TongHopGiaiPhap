@@ -748,6 +748,14 @@ button, input, select { font-family: inherit; }
 .gateway-state.offline i { background: #ff8a68; box-shadow: 0 0 9px #ff8a6890; }
 .login-card h1 { margin: 18px 0 9px; color: #edf5f4; font-size: clamp(28px, 4vw, 36px); font-weight: 680; letter-spacing: -1.5px; line-height: 1.12; }
 .login-card h1 em { color: var(--lime); font-style: normal; }
+.login-card-admin { border-color: #9c7be8; background: linear-gradient(150deg, #171323f2, #0b111bf5); }
+.login-card-admin::before { border-color: #b18cff; }
+.login-card-admin::after { border-color: #dfb36b; }
+.login-card-admin .brand-mark { background: #8c72d8; color: #fff; }
+.login-card-admin .login-brand small { color: #b9a9e2; }
+.login-card-admin .login-card h1 em, .login-card-admin h1 em { color: #c5a9ff; }
+.login-card-admin form>button { border-color: #c5a9ff; background: #b79af4; color: #171126; }
+.login-card-admin form>button:hover:not(:disabled) { background: #cbb5ff; box-shadow: 0 0 24px #b79af44d; }
 .login-intro { margin: 0 0 24px; color: #99afb2; font-size: 12px; }
 .login-card form { display: grid; gap: 15px; }
 .login-card form label { display: grid; gap: 8px; color: #81999e; font: 8px 'IBM Plex Mono', monospace; letter-spacing: .8px; }
