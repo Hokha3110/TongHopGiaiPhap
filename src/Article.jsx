@@ -7,6 +7,11 @@ export default function Article({ body }) {
       img: props => {
         const src = props.src || '';
         if (!(src.startsWith(apiBase + '/api/files/') || src.startsWith('/logos/'))) return <span>[Ảnh cần được tải lên thư viện]</span>;
-        return <img src={src} alt={props.alt || 'Ảnh giải pháp'} loading="lazy"/>;
-      } }}>{body || ''}</ReactMarkdown></div>;
+        const alt = props.alt || 'Ảnh giải pháp';
+        return <figure className="managed-figure"><img src={src} alt={alt} loading="lazy"/><figcaption>{alt}</figcaption></figure>;
+      },
+      blockquote: props => <blockquote className="managed-callout">{props.children}</blockquote>,
+      table: props => <div className="managed-table-wrap"><table>{props.children}</table></div>,
+      th: props => <th scope="col">{props.children}</th>
+    }}>{body || ''}</ReactMarkdown></div>;
 }
