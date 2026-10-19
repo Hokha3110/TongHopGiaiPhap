@@ -15,6 +15,11 @@ const fileUrl = path => path?.startsWith('http') ? path : apiUrl(path || '');
 const icons = { grid: Grid2X2, lock: LockKeyhole, activity: Activity, flask: FlaskConical, code: Code2, fingerprint: Fingerprint, gauge: Gauge, search: Search, shield: Shield, radar: Radar };
 const formatSize = bytes => bytes < 1024 * 1024 ? `${Math.max(1, Math.round(bytes / 1024))} KB` : `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 const fileExtension = doc => (doc.extension || doc.name?.split('.').pop() || '').replace(/^\./, '').toLowerCase();
+const accessLevels = {
+  admin: { label: 'ADMIN', caption: 'Toàn quyền hệ thống', tone: 'admin' },
+  editor: { label: 'EDITOR', caption: 'Quản lý nội dung', tone: 'editor' },
+  member: { label: 'MEMBER', caption: 'Truy cập nội bộ', tone: 'member' },
+};
 // Simple Icons serves brand symbols as SVG; keep the existing wordmark as an
 // automatic fallback for vendors that are not represented in the icon set.
 const brandIconSlugs = {
@@ -609,7 +614,7 @@ function App() {
       <nav className="nav-list">{groups.map(group => { const Icon = icons[group.icon] || Shield; return <button title={group.short} className={`nav-item ${active === group.id && !showSaved ? 'selected' : ''}`} key={group.id} onClick={() => selectCatalogGroup(group.id)}><Icon size={16}/><span>{group.short}</span>{group.id === 'all' && <small>{allSolutions.length}</small>}</button>; })}<button title="Đã lưu" className={`nav-item ${showSaved ? 'selected' : ''}`} onClick={() => { setActive('all'); setShowSaved(true); setMobileOpen(false); requestAnimationFrame(() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth', block: 'start' })); }}><Bookmark size={16}/><span>Đã lưu</span><small>{saved.length}</small></button></nav>
       <div className="sidebar-spacer"/>{['admin','editor'].includes(currentUser?.role) && <a className="nav-item" href="/admin"><ShieldCheck size={16}/> Quản trị thư viện</a>}
       <div className="side-note"><div className="note-icon"><FolderOpen size={16}/></div><b>{apiOnline ? `${totalDocuments} tài liệu đã lập chỉ mục` : 'Thư mục tài liệu'}</b><p>{apiOnline ? `Lần quét gần nhất ${new Date(indexedAt).toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'})}.` : 'Kết nối máy chủ để tìm và mở file trong Solutions.'}</p><span className={`api-state ${apiOnline ? 'online' : ''}`}><i/>{apiOnline ? 'API ĐANG KẾT NỐI' : 'API CHƯA KẾT NỐI'}</span></div>
-      <div className="profile"><div className="avatar">P</div><span><b>{currentUser?.displayName || 'Thành viên'}</b><small>Truy cập nội bộ</small></span><span className="online-dot"/></div>
+      {(() => { const access = accessLevels[currentUser?.role] || accessLevels.member; return <div className={`profile profile-${access.tone}`}><div className="avatar">{(currentUser?.displayName || 'P').slice(0,1).toUpperCase()}</div><span><b>{currentUser?.displayName || 'Thành viên'}</b><small>{access.caption}</small></span><span className="profile-level">{access.label}</span><span className="online-dot"/></div>; })()}
     </aside>
     {mobileOpen && <button className="scrim" aria-label="Đóng menu" onClick={() => setMobileOpen(false)}/>}
     <main id="top" className="main-area">

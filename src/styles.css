@@ -61,6 +61,18 @@ body { color: #e8f0f2; font-size: 14px; line-height: 1.55; background: #080e14; 
 .api-state { font-size: 9px; letter-spacing: .45px; }
 .profile { padding: 14px 8px 3px; }
 .avatar { width: 34px; height: 34px; }
+.profile { position: relative; padding: 14px 8px 7px; border-top: 1px solid #24313b; }
+.profile .avatar { transition: .2s; }
+.profile-level { align-self: flex-start; margin-top: 1px; padding: 3px 5px; border: 1px solid #36515a; border-radius: 4px; color: #96b1b7; background: #102027; font: 7px 'IBM Plex Mono', monospace; letter-spacing: .5px; }
+.profile-admin { background: linear-gradient(90deg, #18251d, transparent 78%); border-top-color: #4b663b; }
+.profile-admin .avatar { color: #172312; background: #c9ff62; border-color: #c9ff62; box-shadow: 0 0 16px #c9ff6245; }
+.profile-admin .profile-level { color: #d7ff8d; border-color: #66874d; background: #213521; }
+.profile-admin .online-dot { background: #c9ff62; box-shadow: 0 0 11px #c9ff62; }
+.profile-editor { background: linear-gradient(90deg, #14252e, transparent 78%); border-top-color: #356272; }
+.profile-editor .avatar { color: #082028; background: #55d9f2; border-color: #55d9f2; box-shadow: 0 0 14px #55d9f244; }
+.profile-editor .profile-level { color: #8feeff; border-color: #437b88; background: #12313a; }
+.profile-member .profile-level { color: #a4c0c5; }
+.profile .online-dot { margin-left: 1px; }
 .main-area { margin-left: 272px; transition: margin-left .24s ease; }
 .topbar { height: 66px; padding: 0 clamp(28px, 4vw, 66px); background: #0a1219df; border-color: #1f3039; backdrop-filter: blur(16px); }
 .crumb { color: #8da1a9; font-size: 10px; letter-spacing: .75px; }
