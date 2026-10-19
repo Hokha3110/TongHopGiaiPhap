@@ -74,6 +74,17 @@ export async function handleAdmin(db, request, url, user) {
       await audit(client, user, 'user.unlock', target);
       return { id: target };
     });
+    if (method === 'POST' && action === 'remove') return transaction(db, async client => {
+      const existing = (await client.query('SELECT id,username,role FROM users WHERE id=$1 FOR UPDATE', [target])).rows[0];
+      if (!existing) throw fail(404, 'Không tìm thấy tài khoản.');
+      if (existing.id === user.id) throw fail(400, 'Không thể tự xóa tài khoản đang dùng.');
+      if (existing.role === 'admin' && Number((await client.query("SELECT count(*) FROM users WHERE role='admin'")).rows[0].count) <= 1) throw fail(400, 'Không thể xóa quản trị viên cuối cùng.');
+      await client.query('UPDATE audit_log SET actor_id=NULL WHERE actor_id=$1', [target]);
+      await client.query('DELETE FROM users WHERE id=$1', [target]);
+      await client.query('DELETE FROM login_attempts WHERE key=$1', [digest('user:' + existing.username)]);
+      await audit(client, user, 'user.delete', target, { username: existing.username, role: existing.role });
+      return { id: target };
+    });
     if (!['POST', 'PATCH'].includes(method)) throw fail(405, 'Phương thức không hỗ trợ.');
     const body = await readJson(request, 8192);
     const username = text(body.username, 80, 'Tên đăng nhập').toLowerCase();
