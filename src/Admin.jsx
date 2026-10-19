@@ -93,7 +93,7 @@ export default function Admin({ user, onLogout }) {
       const form = new FormData(); form.append('file',file); xhr.send(form);
     });
   }
-  if (!canEdit) return <main className="admin-denied"><ShieldCheck/><h1>Bạn không có quyền quản trị</h1><a href="/">Về thư viện</a></main>;
+  if (!canEdit) return <main className="admin-denied"><div className="admin-denied-grid"/><section className="admin-denied-card"><div className="admin-denied-brand"><span className="admin-denied-logo"><img src="/logos/logo-ASIC.png" alt="ASIC CyberSecurity"/></span><span><b>ASIC LIBRARY</b><small>SECURITY CONTROL</small></span></div><div className="admin-denied-icon"><ShieldCheck size={25}/></div><span className="admin-denied-kicker">ACCESS GATE / 403</span><h1>Bạn không có quyền quản trị</h1><p>Tài khoản <strong>{user?.displayName || 'hiện tại'}</strong> chưa được cấp quyền truy cập khu vực này.</p><div className="admin-denied-status"><span/><span>SESSION ĐÃ XÁC THỰC</span><small>{roleNames[user?.role] || 'Thành viên'}</small></div><div className="admin-denied-actions"><a className="admin-denied-primary" href="/">Về thư viện</a><button onClick={onLogout}>Đăng xuất</button></div></section><span className="admin-denied-footer">PRIVATE LIBRARY · INTERNAL ACCESS ONLY</span></main>;
   const activeEntries = entries.filter(e => !e.deleted_at);
   const docOptions = activeEntries.map(e => <option value={e.id} key={e.id}>{e.draft.name}{!e.published ? ' · bản nháp' : ''}</option>);
   const shownEntries = entries.filter(e => Boolean(e.deleted_at) === trash && e.draft.name.toLowerCase().includes(q.toLowerCase()));
