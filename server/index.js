@@ -95,7 +95,7 @@ export function createApi(db = pool) {
     const peer = request.socket.remoteAddress || 'unknown';
     const trustedTunnel = process.env.TRUST_CLOUDFLARE === 'true' && ['127.0.0.1','::1','::ffff:127.0.0.1'].includes(peer);
     const ip = trustedTunnel ? request.headers['cf-connecting-ip'] || peer : peer;
-    const result = await login(pool, body.username, body.password, ip);
+    const result = await login(pool, body.username, body.password, ip, body.captchaToken, body.captchaAnswer);
     await audit(pool, result.user, 'user.login', result.user.id);
     response.setHeader('Set-Cookie', authCookie(result.token));
     return json(request, response, 200, { authenticated: true, user: result.user });
@@ -199,7 +199,7 @@ export function createApi(db = pool) {
   if (response.headersSent) { response.destroy(); return; }
   const status = error.statusCode || (error.code === '23505' ? 409 : error.code === 'ENOENT' ? 404 : 500);
   if (status === 500) console.error('API request failed:', error.code || error.name);
-  json(request, response, status, { error: error.statusCode ? error.message : status === 409 ? 'Tên hoặc dữ liệu đã tồn tại.' : status === 404 ? 'File không còn trên máy chủ.' : 'Máy chủ chưa xử lý được yêu cầu. Vui lòng thử lại.' });
+  json(request, response, status, { error: error.statusCode ? error.message : status === 409 ? 'Tên hoặc dữ liệu đã tồn tại.' : status === 404 ? 'File không còn trên máy chủ.' : 'Máy chủ chưa xử lý được yêu cầu. Vui lòng thử lại.', ...(error.details || {}) });
  }
 });
 server.requestTimeout = 10 * 60 * 1000;

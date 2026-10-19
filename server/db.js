@@ -17,7 +17,7 @@ export async function migrate(db = pool) {
     await client.query(sql);
   });
 }
-export const fail = (statusCode, message) => Object.assign(new Error(message), { statusCode });
+export const fail = (statusCode, message, details = {}) => Object.assign(new Error(message), { statusCode, details });
 export async function audit(db, user, action, target, details = {}) {
   await db.query('INSERT INTO audit_log(actor_id, actor_name, action, target_id, details) VALUES($1,$2,$3,$4,$5)',
     [user?.id || null, user?.displayName || 'Nhập dữ liệu', action, target, JSON.stringify(details)]);

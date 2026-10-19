@@ -1,6 +1,6 @@
 import { rm } from 'node:fs/promises';
 import { transaction, fail, audit } from './db.js';
-import { id, hashPassword, publicUser } from './security.js';
+import { id, hashPassword, publicUser, digest } from './security.js';
 import { importSolutions, documentSelect, documentDto } from './library.js';
 import { receiveFile } from './uploads.js';
 import { groups } from '../src/data/catalog.js';
@@ -66,6 +66,14 @@ export async function handleAdmin(db, request, url, user) {
   if (section === 'users') {
     if (user.role !== 'admin') throw fail(403, 'Chỉ quản trị viên được quản lý tài khoản.');
     if (method === 'GET') return { items: (await db.query('SELECT * FROM users ORDER BY username LIMIT 50 OFFSET $1', [offset])).rows.map(publicUser) };
+    if (method === 'POST' && action === 'unlock') return transaction(db, async client => {
+      const existing = (await client.query('SELECT id,username,active FROM users WHERE id=$1 FOR UPDATE', [target])).rows[0];
+      if (!existing) throw fail(404, 'Không tìm thấy tài khoản.');
+      await client.query('UPDATE users SET active=true WHERE id=$1', [target]);
+      await client.query('DELETE FROM login_attempts WHERE key=$1', [digest('user:' + existing.username)]);
+      await audit(client, user, 'user.unlock', target);
+      return { id: target };
+    });
     if (!['POST', 'PATCH'].includes(method)) throw fail(405, 'Phương thức không hỗ trợ.');
     const body = await readJson(request, 8192);
     const username = text(body.username, 80, 'Tên đăng nhập').toLowerCase();

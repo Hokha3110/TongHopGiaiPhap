@@ -821,6 +821,11 @@ button, input, select { font-family: inherit; }
 .login-card form>button:disabled { opacity: .65; cursor: wait; }
 .login-message { padding: 11px 12px; border: 1px solid #694c3c; border-radius: 3px; background: #291b17; color: #ffc19e; font-size: 11px; line-height: 1.65; overflow-wrap: anywhere; }
 .login-message code { color: #ffe5b6; }
+.login-captcha { padding: 11px; border: 1px solid #3d5d4a; border-radius: 4px; background: #10251d; }
+.login-captcha-row { display: flex; align-items: center; gap: 9px; }
+.login-captcha-row b { min-width: 75px; padding: 10px 8px; border: 1px solid #53764e; border-radius: 3px; color: #d5ff8b; background: #1c3225; font: 15px 'IBM Plex Mono', monospace; text-align: center; letter-spacing: 1px; }
+.login-captcha-row input { flex: 1; }
+.login-captcha small { color: #90ad9c; font: 9px system-ui, sans-serif; letter-spacing: 0; }
 .login-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; margin-top: 22px; padding-top: 15px; border-top: 1px solid #20353b; color: #718890; font-size: 8px; }
 .login-foot svg { color: #61cbd7; }
 .login-foot span { color: #38525a; }
