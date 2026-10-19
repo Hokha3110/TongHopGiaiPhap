@@ -1,9 +1,11 @@
 import ReactMarkdown, { defaultUrlTransform } from 'react-markdown';
-const apiBase = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
-export function mediaUrl(value = '') { return value.startsWith('/api/files/') ? apiBase + value : value; }
+import { API_BASE as apiBase, mediaUrl } from './lib/libraryApi.js';
+export { mediaUrl } from './lib/libraryApi.js';
+import './article.css';
 export default function Article({ body }) {
   return <div className="managed-article"><ReactMarkdown urlTransform={url => mediaUrl(defaultUrlTransform(url))}
-    components={{ a: props => <a href={props.href} target="_blank" rel="noreferrer">{props.children}</a>,
+    components={{ p: props => props.node?.children?.some(child => child.tagName === 'img') ? <div className="managed-media-paragraph">{props.children}</div> : <p>{props.children}</p>,
+      a: props => <a href={props.href} target="_blank" rel="noreferrer">{props.children}</a>,
       img: props => {
         const src = props.src || '';
         if (!(src.startsWith(apiBase + '/api/files/') || src.startsWith('/logos/'))) return <span>[Ảnh cần được tải lên thư viện]</span>;

@@ -1,0 +1,16 @@
+.modal-frame {
+  position: fixed;
+  inset: 0;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  color: #e6eff1;
+  overscroll-behavior: contain;
+}
+.modal-frame:not([open]) { display: none; }
+.modal-frame::backdrop { background: rgba(2, 7, 10, .86); }
+.modal-frame:focus { outline: none; }
+@media (max-width: 600px) {
+  .modal-frame { max-width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+}
