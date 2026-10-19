@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Activity, ArrowDownRight, ArrowLeft, ArrowRight, ArrowUpRight, Bookmark, ChevronDown,
   Command, FileText, Fingerprint, FlaskConical, FolderOpen, Gauge, Grid2X2,
-  Download, Eye, EyeOff, ExternalLink, LockKeyhole, Menu, Radar, Search, Shield, ShieldCheck, X, Code2,
+  Download, Eye, EyeOff, ExternalLink, LockKeyhole, Menu, PanelLeftClose, PanelLeftOpen, Radar, Search, Shield, ShieldCheck, X, Code2,
 } from 'lucide-react';
 import { groups } from './data/catalog.js';
 
@@ -450,6 +450,7 @@ function App() {
   });
   const [showSaved, setShowSaved] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => window.localStorage.getItem('tonghop.sidebar-collapsed') === 'true');
   const [sort, setSort] = useState('A–Z');
   const [apiOnline, setApiOnline] = useState(false);
   const [remoteEntries, setRemoteEntries] = useState([]);
@@ -591,7 +592,8 @@ function App() {
   if (window.location.pathname.replace(/\/$/, '') === '/admin') return <Admin user={currentUser} onLogout={logout}/>;
   if (solutionPageId && (detailSolutionEntry || detailSourceOnly)) return <SolutionDetailPage entry={detailSolutionEntry} area={detailArea} profile={detailSolutionEntry?.profile} sourceOnly={detailSourceOnly} relatedItems={relatedDetailItems} onOpenEntry={openEntryFromSolution} onOpenDocument={doc => { setSolutionPageId(''); window.location.hash='#catalog'; setPreviewDoc(doc); }} onOpenSolution={openSolutionPage} onLogout={logout}/>;
 
-  return <div className="app-shell">
+  function toggleSidebar() { setSidebarCollapsed(value => { const next = !value; window.localStorage.setItem('tonghop.sidebar-collapsed', String(next)); return next; }); }
+  return <div className={`app-shell ${sidebarCollapsed ? 'sidebar-is-collapsed' : ''}`}>
     <aside className={`sidebar ${mobileOpen ? 'open' : ''}`}>
       <a className="brand brand-asic" href="#top" onClick={() => setMobileOpen(false)}><span className="brand-asic-logo"><img src="/logos/logo-ASIC.png" alt="ASIC CyberSecurity"/></span></a>
       <div className="workspace"><span className="workspace-icon workspace-asic-icon"><img src="/logos/logo-ASIC.png" alt="ASIC"/></span><span><b>ASIC Library</b><small>Kho tài liệu nội bộ</small></span></div>
@@ -603,7 +605,7 @@ function App() {
     </aside>
     {mobileOpen && <button className="scrim" aria-label="Đóng menu" onClick={() => setMobileOpen(false)}/>}
     <main id="top" className="main-area">
-      <header className="topbar"><button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Mở menu"><Menu size={19}/></button><div className="crumb">THƯ VIỆN <span>/</span> <b>{active === 'all' ? 'TỔNG QUAN' : selectedGroup?.short.toUpperCase()}</b></div><div className="top-actions"><span className="secure-status"><i/> DÀNH CHO THÀNH VIÊN</span><button className="logout-button" onClick={logout}>Đăng xuất</button></div></header>
+      <header className="topbar"><button className="mobile-menu" onClick={() => setMobileOpen(true)} aria-label="Mở menu"><Menu size={19}/></button><button className="sidebar-toggle" onClick={toggleSidebar} aria-label={sidebarCollapsed ? 'Mở rộng thanh bên' : 'Thu gọn thanh bên'} title={sidebarCollapsed ? 'Mở rộng thanh bên' : 'Thu gọn thanh bên'}>{sidebarCollapsed ? <PanelLeftOpen size={17}/> : <PanelLeftClose size={17}/>}</button><div className="crumb">THƯ VIỆN <span>/</span> <b>{active === 'all' ? 'TỔNG QUAN' : selectedGroup?.short.toUpperCase()}</b></div><div className="top-actions"><span className="secure-status"><i/> DÀNH CHO THÀNH VIÊN</span><button className="logout-button" onClick={logout}>Đăng xuất</button></div></header>
       <div className="content-wrap">
         <section className="hero"><div className="hero-grid"/><div className="hero-content"><div className="eyebrow"><i className="pulse"/> THƯ VIỆN NỘI BỘ <span className="eyebrow-line"/> AN NINH MẠNG</div><h1>Giải pháp an ninh mạng,<br/><em>tra cứu trong một nơi.</em></h1><p>Tìm hiểu từng giải pháp, xem tài liệu liên quan và mở bản xem trước ngay trong thư viện.</p><div className="hero-actions"><button onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}>Khám phá giải pháp <ArrowDownRight size={16}/></button><span>{allSolutions.length} giải pháp <i/> {allCollections.length} bộ tài liệu dùng chung</span></div><div className="hero-meta"><span><ShieldCheck size={14}/> Dành cho thành viên</span><i className="meta-divider"/><span><i className="live-dot"/> {apiOnline ? 'Đã kết nối thư mục tài liệu' : 'Thư mục tài liệu chưa kết nối'}</span></div></div><div className="hero-visual"><NetworkMap active={active} onSelect={selectMapGroup}/></div></section>
         <section className="search-section"><div className="search-box"><Search size={19}/><input ref={searchInputRef} value={query} onChange={event => setQuery(event.target.value)} placeholder="Tìm giải pháp, hãng hoặc tên tài liệu…" aria-label="Tìm trong thư viện"/><kbd><Command size={12}/> K</kbd><button className="search-submit" aria-label="Đến danh mục kết quả" onClick={() => document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' })}><ArrowUpRight size={18}/></button></div><div className="quick-hints"><span>TÌM NHANH:</span>{['SIEM','Zero Trust','OSINT','Blancco'].map(term => <button key={term} onClick={() => setQuery(term)}>{term}</button>)}</div>

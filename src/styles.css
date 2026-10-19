@@ -21,6 +21,16 @@ body { color: #e8f0f2; font-size: 14px; line-height: 1.55; background: #080e14; 
 :focus-visible { outline: 2px solid #6fe4eb !important; outline-offset: 3px; }
 .app-shell { background: radial-gradient(ellipse 70% 42% at 78% -12%, #0d55504a, transparent 72%), radial-gradient(ellipse 50% 45% at 5% 54%, #102a3626, transparent 78%), #080e14; }
 .sidebar { width: 272px; padding: 25px 17px 15px; background: linear-gradient(180deg, #0a1118, #091017 60%, #080e14); border-color: #263741; }
+.sidebar-toggle { display:grid; place-items:center; flex:none; width:31px; height:31px; padding:0; border:1px solid #2b3a43; border-radius:5px; background:#111a22; color:#a9c2c8; cursor:pointer; }
+.sidebar-toggle:hover { color:var(--lime); border-color:#6c8a55; }
+.sidebar-is-collapsed .sidebar { width:82px; padding-inline:12px; }
+.sidebar-is-collapsed .main-area { margin-left:82px; }
+.sidebar-is-collapsed .brand-asic-logo { width:58px; }
+.sidebar-is-collapsed .workspace { justify-content:center; padding:8px; }
+.sidebar-is-collapsed .workspace>span:not(.workspace-icon), .sidebar-is-collapsed .workspace>svg, .sidebar-is-collapsed .side-label, .sidebar-is-collapsed .nav-item>span, .sidebar-is-collapsed .nav-item>small, .sidebar-is-collapsed .admin-brand, .sidebar-is-collapsed .side-note, .sidebar-is-collapsed .profile>span { display:none; }
+.sidebar-is-collapsed .nav-item { justify-content:center; padding-inline:0; }
+.sidebar-is-collapsed .sidebar-spacer + .nav-item { font-size:0; justify-content:center; }
+.sidebar-is-collapsed .sidebar-spacer + .nav-item svg { margin:0; }
 .brand { height: 50px; gap: 12px; }
 .brand-mark { width: 39px; height: 39px; border-radius: 12px; background: linear-gradient(145deg, #bff36d, #73d9b7); color: #09201f; border: 0; box-shadow: 0 5px 22px #8de7bb25; }
 .brand b { font-size: 13px; letter-spacing: 1.2px; }
@@ -266,6 +276,7 @@ footer span:last-child { font-size: 11px; }
 @media (max-width: 760px) {
   .sidebar { width: min(310px, 86vw); }
   .main-area { margin-left: 0; }
+  .sidebar-toggle { display:none; }
   .topbar { height: 60px; padding: 0 16px; gap: 11px; }
   .crumb { flex: 1; font-size: 9px; }
   .secure-status { font-size: 8px; }
