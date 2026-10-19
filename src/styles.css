@@ -73,6 +73,23 @@ body { color: #e8f0f2; font-size: 14px; line-height: 1.55; background: #080e14; 
 .profile-editor .profile-level { color: #8feeff; border-color: #437b88; background: #12313a; }
 .profile-member .profile-level { color: #a4c0c5; }
 .profile .online-dot { margin-left: 1px; }
+@keyframes identityPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(201,255,98,0); } 45% { box-shadow: 0 0 0 7px rgba(201,255,98,.12), 0 0 20px rgba(201,255,98,.28); } }
+@keyframes identityScan { 0% { transform: translateX(-115%); opacity: 0; } 18% { opacity: .7; } 72% { opacity: .7; } 100% { transform: translateX(260%); opacity: 0; } }
+.profile { overflow: hidden; transition: background .2s, transform .2s, border-color .2s; }
+.profile:hover { transform: translateY(-2px); background-color: #102027; }
+.profile::after { content: ''; position: absolute; left: -25%; top: 0; width: 24%; height: 1px; background: linear-gradient(90deg, transparent, var(--lime), transparent); opacity: 0; pointer-events: none; }
+.profile-admin::after { animation: identityScan 4.8s ease-in-out infinite; }
+.profile-admin .avatar { animation: identityPulse 3.2s ease-in-out infinite; }
+.profile-editor::after { background: linear-gradient(90deg, transparent, var(--cyan), transparent); animation: identityScan 5.8s ease-in-out infinite .7s; }
+.profile-editor .avatar { animation: editorPulse 3.8s ease-in-out infinite; }
+.profile-member::after { background: linear-gradient(90deg, transparent, #8ab7c0, transparent); animation: identityScan 7.4s ease-in-out infinite 1.5s; }
+.profile-member .avatar { animation: memberPulse 4.6s ease-in-out infinite; }
+.profile .online-dot { animation: identityPulse 2.4s ease-in-out infinite; }
+.side-note { position: relative; overflow: hidden; }
+.side-note::after { content: ''; position: absolute; left: -45%; top: 0; width: 34%; height: 100%; background: linear-gradient(90deg, transparent, rgba(112,225,238,.09), transparent); transform: skewX(-18deg); animation: identityScan 7s ease-in-out infinite 1.2s; pointer-events: none; }
+@keyframes editorPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(85,217,242,0); } 45% { box-shadow: 0 0 0 6px rgba(85,217,242,.1), 0 0 18px rgba(85,217,242,.24); } }
+@keyframes memberPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(138,183,192,0); } 45% { box-shadow: 0 0 0 5px rgba(138,183,192,.08), 0 0 14px rgba(138,183,192,.16); } }
+@media (prefers-reduced-motion: reduce) { .profile, .profile::after, .profile-admin .avatar, .profile-editor .avatar, .profile-member .avatar, .profile .online-dot, .side-note::after { animation: none; transition: none; } }
 .main-area { margin-left: 272px; transition: margin-left .24s ease; }
 .topbar { height: 66px; padding: 0 clamp(28px, 4vw, 66px); background: #0a1219df; border-color: #1f3039; backdrop-filter: blur(16px); }
 .crumb { color: #8da1a9; font-size: 10px; letter-spacing: .75px; }
