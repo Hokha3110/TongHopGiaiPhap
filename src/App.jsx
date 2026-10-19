@@ -7,6 +7,7 @@ import {
   Download, Eye, EyeOff, ExternalLink, LockKeyhole, Menu, PanelLeftClose, PanelLeftOpen, Radar, Search, Shield, ShieldCheck, X, Code2,
 } from 'lucide-react';
 import { groups } from './data/catalog.js';
+import { localBrandLogos } from './data/brandAssets.js';
 
 
 const API_BASE = (import.meta.env.VITE_API_BASE || '').replace(/\/$/, '');
@@ -31,33 +32,6 @@ const brandIconSlugs = {
   '20-security-scorecard': 'securityscorecard', '21-nowsecure': 'nowsecure',
   '22-blancco': 'blancco', '24-trend-micro': 'trendmicro',
   '29-simspace': 'simspace', '666-fasoo': 'fasoo',
-};
-const localBrandLogos = {
-  '02-picus': '/logos/picus-clean.png',
-  '06-sechard': '/logos/sechard-clean.png',
-  '11-penlink': '/logos/asic-8-fit.png',
-  '12-parasoft': '/logos/parasoft-fit.png',
-  '04-apposite': '/logos/apposite-clean.png',
-  '05-crimewall-maltego': '/logos/maltego-logo.svg',
-  '07-graylog': '/logos/graylog.png',
-  '08-keysight': '/logos/keysight-clean.png',
-  '09-exxact': '/logos/exxact-clean.png',
-  '10-accuknox': '/logos/accuknox-clean.png',
-  '13-cimcor': '/logos/cimcor-clean.png',
-  '14-iriusrisk': '/logos/iriusrisk-clean.png',
-  '03-niagara': '/logos/niagara.png',
-  '15-cyber-test': '/logos/cyber-test-system-clean.png',
-  '20-security-scorecard': '/logos/securityscorecard-fit.png',
-  '21-nowsecure': '/logos/nowsecure-fit.png',
-  '24-trend-micro': '/logos/trendmicro-clean-fit.png',
-  '28-forestall': '/logos/forestall.svg',
-  '29-simspace': '/logos/simspace-clean.png',
-  '666-fasoo': '/logos/fasoo.png',
-  '96-seclab-tyrex': '/logos/seclab-clean.png',
-  '22-blancco': '/logos/blancco-clean.png',
-  '23-eggplant': 'https://mms.businesswire.com/media/20200618005581/en/679425/5/eggplant-vert-primary-logo-light-background.jpg',
-  '27-forcepoint': 'https://www.arrow.com/globalecs-media/iiqpl5td/forcepoint_logo_new-webp.png',
-  '25-didomi': '/logos/didomi-clean.png',
 };
 const inlineUrl = doc => fileUrl(doc.url) + (doc.url?.includes('?') ? '&' : '?') + 'view=inline';
 const previewType = doc => {
