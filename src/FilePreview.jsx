@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Download, FileText, X } from 'lucide-react';
 import { apiUrl, fileUrl, inlineUrl, fileExtension, formatSize } from './lib/libraryApi.js';
 import ModalFrame from './ui/ModalFrame.jsx';
@@ -77,6 +77,45 @@ function OfficePreview({ document, onSessionExpired }) {
   return <iframe className="office-preview-frame" src={preview.src} title={'Bản xem trước ' + document.name}/>;
 }
 
+function SpreadsheetPreview({ source, title, onSessionExpired }) {
+  const [state, setState] = useState({ status:'loading', sheets:[], active:0, message:'' });
+  useEffect(() => {
+    let active = true;
+    const controller = new AbortController();
+    setState({ status:'loading', sheets:[], active:0, message:'' });
+    (async () => {
+      try {
+        const response = await fetch(source, { credentials:'include', signal:controller.signal });
+        if (response.status === 401) onSessionExpired?.();
+        if (!response.ok) throw new Error('Không tải được bảng tính từ máy chủ.');
+        const arrayBuffer = await response.arrayBuffer();
+        if (!active) return;
+        const xlsx = await import('xlsx');
+        if (!active) return;
+        const workbook = xlsx.read(arrayBuffer, { type:'array', cellDates:true });
+        const sheets = workbook.SheetNames.map(name => {
+          const rows = xlsx.utils.sheet_to_json(workbook.Sheets[name], { header:1, raw:false, defval:'' });
+          return { name, rows:rows.slice(0,300).map(row => row.slice(0,40)) };
+        });
+        if (active) setState({ status:'ready', sheets, active:0, message:'' });
+      } catch (error) {
+        if (active && error.name !== 'AbortError') setState({ status:'error', sheets:[], active:0, message:error.message || 'Không đọc được bảng tính.' });
+      }
+    })();
+    return () => { active = false; controller.abort(); };
+  }, [source,onSessionExpired]);
+  const sheet = state.sheets[state.active];
+  const columns = useMemo(() => sheet ? Math.max(1, ...sheet.rows.map(row => row.length)) : 0, [sheet]);
+  if (state.status === 'loading') return <div className="office-preview-state">Đang đọc bảng tính…</div>;
+  if (state.status === 'error') return <div className="office-preview-state"><FileText size={28}/><p>{state.message}</p><small>Bạn vẫn có thể tải file Excel về để mở bằng ứng dụng phù hợp.</small></div>;
+  if (!sheet) return <div className="office-preview-state"><p>Bảng tính không có dữ liệu hiển thị.</p></div>;
+  return <div className="spreadsheet-preview" aria-label={'Bản xem trước ' + title}>
+    <div className="spreadsheet-tabs" role="tablist">{state.sheets.map((item,index) => <button type="button" role="tab" aria-selected={state.active === index} className={state.active === index ? 'active' : ''} key={item.name} onClick={() => setState(previous => ({ ...previous, active:index }))}>{item.name}</button>)}</div>
+    <div className="spreadsheet-scroll"><table><tbody>{sheet.rows.map((row,rowIndex) => <tr key={rowIndex}>{Array.from({ length:columns },(_,columnIndex) => <td key={columnIndex}>{String(row[columnIndex] ?? '')}</td>)}</tr>)}</tbody></table></div>
+    {sheet.rows.length >= 300 && <small className="spreadsheet-note">Đang hiển thị 300 dòng đầu tiên để giữ tốc độ xem trước. Tải file để xem toàn bộ.</small>}
+  </div>;
+}
+
 
 const videoTypes = { mp4:'video/mp4', mov:'video/quicktime', mkv:'video/x-matroska', webm:'video/webm' };
 function previewType(doc) {
@@ -86,13 +125,14 @@ function previewType(doc) {
   if (Object.hasOwn(videoTypes, ext)) return 'video';
   if (['txt','md','csv'].includes(ext)) return 'text';
   if (['docx','docm'].includes(ext)) return 'docx';
-  if (['doc','rtf','xls','xlsm','xlsx','ppt','pptm','pptx','odt','ods','odp'].includes(ext)) return 'office';
+  if (['xls','xlsm','xlsx'].includes(ext)) return 'spreadsheet';
+  if (['doc','rtf','ppt','pptm','pptx','odt','ods','odp'].includes(ext)) return 'office';
   return 'other';
 }
 export default function FilePreview({ document, onClose, onSessionExpired }) {
   const kind = previewType(document);
   const source = inlineUrl(document);
-  const oversized = ['docx','office'].includes(kind) && document.size > 30 * 1024 * 1024;
+  const oversized = ['docx','office','spreadsheet'].includes(kind) && document.size > 30 * 1024 * 1024;
   const [retry, setRetry] = useState(0);
   return <ModalFrame className="preview-modal" labelledBy="preview-title" onClose={onClose}>
     <header className="preview-header">
@@ -107,9 +147,10 @@ export default function FilePreview({ document, onClose, onSessionExpired }) {
         {kind === 'text' && <iframe src={source} title={'Nội dung ' + document.name}/>}
         {kind === 'docx' && <DocxPreview key={document.id + ':' + retry} source={source} title={document.name} onSessionExpired={onSessionExpired}/>}
         {kind === 'office' && <OfficePreview key={document.id + ':' + retry} document={document} onSessionExpired={onSessionExpired}/>}
+        {kind === 'spreadsheet' && <SpreadsheetPreview key={document.id + ':' + retry} source={source} title={document.name} onSessionExpired={onSessionExpired}/>}
         {kind === 'other' && <div className="preview-unavailable"><span className="preview-file-icon"><FileText size={28}/></span><h3>File này chưa xem trực tiếp được</h3><p>Tải file về để mở bằng ứng dụng phù hợp trên thiết bị của bạn.</p></div>}
       </>}
     </div>
-    {['office','docx'].includes(kind) && !oversized && <div className="preview-retry"><button type="button" onClick={() => setRetry(value => value + 1)}>Thử tải bản xem trước lại</button></div>}
+    {['office','docx','spreadsheet'].includes(kind) && !oversized && <div className="preview-retry"><button type="button" onClick={() => setRetry(value => value + 1)}>Thử tải bản xem trước lại</button></div>}
   </ModalFrame>;
 }
