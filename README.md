@@ -2,6 +2,8 @@
 
 React/Vite cho thư viện và dashboard `/admin`, API Node.js, PostgreSQL cho nội dung/tài khoản và ổ đĩa Linux cho file tài liệu. Giao diện thư viện, trang login và luồng xem trước được giữ; danh mục thành viên lấy từ nội dung đã xuất bản trong database.
 
+ASIC Works quản lý dự án riêng tại `works.kaliot.online`: `npm run dev:works` để chạy local, `npm run build:works` để tạo `dist-works/`. Xem [DEPLOY-WORKS.md](DEPLOY-WORKS.md) cho migration, cấu hình origin, triển khai subdomain và quyền truy cập dự án.
+
 ## Triển khai trên Linux
 
 Xem [DEPLOY-LINUX.md](DEPLOY-LINUX.md). Hướng dẫn tiếp tục từ thư mục `/opt/tong-hop-giai-phap/Solutions` đã chép, gồm tạo PostgreSQL, nhập dữ liệu cũ, admin đầu tiên, systemd, Cloudflare Tunnel, FE tại kaliot.online và backup hằng ngày.

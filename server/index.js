@@ -10,6 +10,7 @@ import './config.js';
 import { pool, fail, audit } from './db.js';
 import { login, sessionUser, cookieToken, digest } from './security.js';
 import { handleAdmin, readJson } from './admin.js';
+import { handleProjects } from './projects.js';
 import { catalog, fileRecord, documentSelect, documentDto, visibleWhere } from './library.js';
 
 const execFileAsync = promisify(execFile);
@@ -107,6 +108,7 @@ export function createApi(db = pool) {
     return json(request, response, 200, { authenticated: false });
   }
   if (!user) throw fail(401, 'Cần đăng nhập để tiếp tục.');
+  if (url.pathname === '/api/projects' || url.pathname.startsWith('/api/projects/')) return json(request, response, 200, await handleProjects(pool, request, url, user));
   if (url.pathname.startsWith('/api/admin/')) return json(request, response, 200, await handleAdmin(pool, request, url, user));
   if (request.method !== 'GET') throw fail(405, 'Method not allowed');
   if (url.pathname === '/api/catalog') return json(request, response, 200, await catalog(pool));

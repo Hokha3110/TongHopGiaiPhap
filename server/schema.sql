@@ -36,3 +36,31 @@ CREATE TABLE IF NOT EXISTS audit_log (
   created_at timestamptz NOT NULL DEFAULT now()
 );
 INSERT INTO schema_migrations(version) VALUES(1) ON CONFLICT DO NOTHING;
+
+-- Keep project history if an account is removed. Existing members and admins
+-- can still access the workspace; membership records follow account deletion.
+CREATE TABLE IF NOT EXISTS projects (
+  id text PRIMARY KEY,
+  owner_id text REFERENCES users(id) ON DELETE SET NULL,
+  owner_name text NOT NULL,
+  name text NOT NULL CHECK (length(btrim(name)) BETWEEN 1 AND 180),
+  customer text NOT NULL DEFAULT '', start_date date, end_date date,
+  stage text NOT NULL DEFAULT 'presale' CHECK (stage IN ('presale','onsite','postsale')),
+  status text NOT NULL DEFAULT 'planned' CHECK (status IN ('planned','active','blocked','completed','cancelled')),
+  progress integer NOT NULL DEFAULT 0 CHECK (progress BETWEEN 0 AND 100),
+  content jsonb NOT NULL DEFAULT '{}' CHECK (jsonb_typeof(content)='object'),
+  archived boolean NOT NULL DEFAULT false, revision integer NOT NULL DEFAULT 1 CHECK (revision>0),
+  created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(),
+  CHECK (start_date IS NULL OR end_date IS NULL OR end_date>=start_date)
+);
+CREATE TABLE IF NOT EXISTS project_members (
+  project_id text NOT NULL REFERENCES projects(id) ON DELETE CASCADE,
+  user_id text NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  role text NOT NULL CHECK (role IN ('editor','viewer')),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(project_id,user_id)
+);
+CREATE INDEX IF NOT EXISTS projects_activity_idx ON projects(archived,updated_at DESC,id);
+CREATE INDEX IF NOT EXISTS projects_owner_idx ON projects(owner_id,updated_at DESC);
+CREATE INDEX IF NOT EXISTS project_members_user_idx ON project_members(user_id,project_id);
+INSERT INTO schema_migrations(version) VALUES(2) ON CONFLICT DO NOTHING;

@@ -1,6 +1,7 @@
 # Dependencies and generated frontend output
 node_modules/
 dist/
+dist-works/
 build/
 .vite/
 .wrangler/
