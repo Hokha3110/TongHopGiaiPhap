@@ -41,23 +41,24 @@ curl http://127.0.0.1:8787/api/health
 
 API dùng tài khoản và phiên đăng nhập nội bộ hiện tại. Vì cả hai site cùng gọi `api.kaliot.online`, người đã đăng nhập có thể được nhận diện ngay trên Works. Đăng xuất thu hồi phiên này.
 
-## Tạo frontend Cloudflare Pages riêng
+## Deploy frontend lên Cloudflare Workers
 
-Trong Workers & Pages, tạo dự án Pages mới từ cùng Git repository, đặt tên ví dụ `asic-works`:
+Tạo Worker `asic-works` từ cùng Git repository. Root directory là gốc repository.
 
 | Cấu hình | Giá trị |
 | --- | --- |
-| Root directory | Gốc repository, để trống |
 | Build command | `npm run build:works` |
-| Build output directory | `dist-works` |
+| Deploy command | `npx wrangler deploy --config wrangler.works.jsonc` |
+| Preview command | `npx wrangler versions upload --config wrangler.works.jsonc` |
 | Biến môi trường build | `VITE_API_BASE=https://api.kaliot.online` |
 
-Chờ build thành công, vào **Custom domains → Set up a custom domain**, thêm `works.kaliot.online` và hoàn tất bước DNS mà Cloudflare hướng dẫn. Không thay custom domain `kaliot.online` của dự án thư viện. Đăng nhập trên domain `works.kaliot.online` sau khi chứng chỉ HTTPS đã sẵn sàng; domain `pages.dev` khác site có thể không dùng được cookie `SameSite=Lax`.
+File `wrangler.works.jsonc` quy định thư mục `dist-works`, ngày tương thích và SPA fallback qua `assets.not_found_handling`. Không thêm quy tắc `/* /index.html 200` vào `_redirects`: Workers từ chối vì vòng lặp URL. Nếu dùng Preview builds, cấu hình biến build riêng cho preview khi cần.
 
-Frontend này có sẵn SPA fallback `_redirects`, chặn lập chỉ mục và header cho static assets. Không cần tạo tunnel mới: API vẫn đi qua tunnel `api.kaliot.online → http://127.0.0.1:8787`.
+Sau khi deploy thành công, thêm custom domain `works.kaliot.online` cho Worker. Giữ domain thư viện `kaliot.online` trên ứng dụng hiện tại. Đăng nhập trên `works.kaliot.online`; domain `workers.dev` khác site có thể không dùng được cookie `SameSite=Lax`.
 
-Tham khảo chính thức: [Cloudflare build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/), [Custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/).
+API vẫn đi qua tunnel `api.kaliot.online → http://127.0.0.1:8787`. Thay đổi cấu hình deploy frontend này không yêu cầu sửa database hoặc khởi động lại API.
 
+Tham khảo: [Workers builds](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/), [SPA routing](https://developers.cloudflare.com/workers/static-assets/routing/single-page-application/).
 ## Quyền và cách sử dụng
 
 - Mọi tài khoản đang hoạt động có thể tạo dự án của mình.
@@ -75,3 +76,4 @@ Tham khảo chính thức: [Cloudflare build configuration](https://developers.c
 Tạo dự án bằng tài khoản A, thêm tài khoản B quyền Chỉ xem rồi Cập nhật để kiểm tra sự khác biệt. Tài khoản C chưa được thêm sẽ không thấy dự án và không mở được link chi tiết. Tạo một task có input/output, một test case và một cập nhật; tải lại trang để kiểm tra dữ liệu đã lưu. Lưu trữ rồi mở lại dự án để kiểm tra lịch sử còn nguyên.
 
 Nếu web báo lỗi kết nối, kiểm tra `VITE_API_BASE` lúc build, origin Works trong `.env` API và việc đã chạy `npm run db:migrate`. Xem log bằng `sudo journalctl -u tonghop-api -n 60 --no-pager`.
+
