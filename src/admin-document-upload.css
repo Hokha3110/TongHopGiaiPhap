@@ -1,0 +1,97 @@
+.adu-dialog { box-sizing:border-box; width:min(1080px,calc(100vw - 40px)); max-width:none; max-height:calc(100dvh - 40px); padding:0; margin:auto; color:#e1edf0; background:#0c1920; border:1px solid #35525b; border-radius:20px; box-shadow:0 30px 100px #0009; color-scheme:dark; font:14px/1.5 'IBM Plex Sans Variable',system-ui,sans-serif; }
+.adu-dialog[open] { display:flex; flex-direction:column; }
+.adu-dialog::backdrop { background:rgba(2,9,13,.78); backdrop-filter:blur(5px); }
+.adu-dialog *, .adu-dialog *::before, .adu-dialog *::after { box-sizing:border-box; }
+.adu-dialog button,.adu-dialog input { font:inherit; }
+.adu-dialog button { cursor:pointer; }
+.adu-dialog button:disabled { opacity:.45; cursor:not-allowed; }
+.adu-dialog :focus-visible { outline:2px solid #caf580; outline-offset:3px; }
+.adu-dialog h2,.adu-dialog h3,.adu-dialog h4,.adu-dialog p { margin:0; }
+.adu-header { display:flex; align-items:center; gap:16px; padding:24px 28px; border-bottom:1px solid #29414a; flex-shrink:0; background:radial-gradient(ellipse at 90% 10%,#22392a66,transparent 60%),#101f27; }
+.adu-heading-icon { display:grid; place-items:center; width:48px; height:48px; border:1px solid #668246; border-radius:14px; color:#cff58d; background:#243723; flex-shrink:0; }
+.adu-eyebrow { font-size:10px; letter-spacing:.13em; color:#91abb4; }
+.adu-header h2 { font-size:25px; line-height:1.3; margin:4px 0; letter-spacing:-.03em; }
+.adu-header p { color:#9ab1b9; font-size:13px; }
+.adu-dialog .adu-icon-button { display:grid; place-items:center; flex-shrink:0; background:transparent; color:#9ab4bd; border:1px solid transparent; border-radius:8px; width:34px; height:34px; padding:0; }
+.adu-dialog .adu-icon-button:hover:not(:disabled) { border-color:#48666f; background:#20343e; color:#e3eff0; }
+.adu-close { margin-left:auto; align-self:flex-start; }
+.adu-body { display:grid; grid-template-columns:320px minmax(0,1fr); min-height:0; overflow-y:auto; overscroll-behavior:contain; }
+.adu-step { display:flex; gap:11px; align-items:start; margin-bottom:18px; }
+.adu-step>span { display:grid; place-items:center; width:30px; height:30px; border:1px solid #35545c; border-radius:9px; font:12px ui-monospace,monospace; color:#bce891; flex-shrink:0; }
+.adu-step h3 { font-size:15px; font-weight:600; }
+.adu-step p { color:#829fa9; font-size:12px; margin-top:3px; }
+.adu-destinations { padding:24px 18px 24px 24px; border-right:1px solid #29414a; background:#0a161d; min-width:0; }
+.adu-search { display:flex; gap:9px; align-items:center; padding:0 11px; background:#10222b; border:1px solid #36515b; border-radius:9px; color:#88a9b4; margin-bottom:12px; }
+.adu-search input { border:0; padding:11px 0; width:100%; min-width:0; background:transparent; color:#e3eef0; }
+.adu-search input::placeholder { color:#819ba5; }
+.adu-destination-list { display:flex; flex-direction:column; gap:7px; max-height:360px; overflow-y:auto; padding:3px; scrollbar-width:thin; scrollbar-color:#36545e transparent; }
+.adu-dialog .adu-destination { width:100%; display:flex; align-items:center; gap:11px; padding:11px 10px; text-align:left; border:1px solid transparent; border-radius:10px; background:transparent; color:#c7d9de; min-height:68px; }
+.adu-dialog .adu-destination:hover:not(:disabled) { background:#142832; border-color:#33545f; }
+.adu-dialog .adu-destination.is-selected { background:#213627; border-color:#86ac5c; box-shadow:inset 3px 0 #c8f478; opacity:1; }
+.adu-destination>span:nth-child(2) { flex:1; min-width:0; }
+.adu-destination strong { display:block; font-size:13px; overflow-wrap:anywhere; }
+.adu-destination small { display:block; color:#8ca8b2; font-size:11px; margin-top:3px; }
+.adu-destination em { display:block; color:#edc98c; font-size:10px; font-style:normal; margin-top:3px; }
+.adu-destination>svg { flex-shrink:0; color:#c8f478; }
+.adu-brand { width:43px; height:43px; flex-shrink:0; display:grid; place-items:center; background:#f1f6f3; border-radius:9px; padding:5px; color:#436472; overflow:hidden; }
+.adu-brand img { width:100%; height:100%; object-fit:contain; }
+.adu-lock-note { display:flex; gap:8px; color:#afc18d; font-size:11px; margin-top:14px!important; }
+.adu-lock-note svg { flex-shrink:0; margin-top:3px; }
+.adu-empty-search { color:#9eb1ba; padding:18px 8px; font-size:13px; }
+.adu-files { padding:24px 28px; min-width:0; }
+.adu-target { display:flex; align-items:center; gap:14px; padding:16px; background:linear-gradient(120deg,#243a29,#152b2b); border:1px solid #597e48; border-radius:12px; margin-bottom:14px; }
+.adu-target .adu-brand { width:55px; height:55px; padding:7px; }
+.adu-target>div { flex:1; min-width:0; }
+.adu-target>div>span { display:block; color:#badb97; font-size:9px; letter-spacing:.11em; margin-bottom:5px; }
+.adu-target strong { display:block; color:#e3f2d6; font-size:21px; line-height:1.3; overflow-wrap:anywhere; }
+.adu-target small { display:block; color:#9fb6ab; font-size:12px; margin-top:4px; }
+.adu-target>svg { color:#a7cf82; flex-shrink:0; }
+.adu-target.is-empty { border:1px dashed #395460; background:#102029; }
+.adu-target.is-empty strong { font-size:16px; color:#b5cbd3; }
+.adu-target.is-empty small { color:#87a0ac; }
+.adu-draft-note { color:#e5c18c; font-size:12px; margin:0 0 14px!important; }
+.adu-dropzone { display:flex; flex-direction:column; align-items:center; gap:8px; padding:22px 14px; border:1px dashed #496874; border-radius:12px; text-align:center; background:#0b1921; transition:background .15s,border-color .15s; }
+.adu-dropzone>svg { color:#79bec8; }
+.adu-dropzone>strong { font-size:15px; }
+.adu-dropzone>p { color:#8fa9b4; font-size:12px; max-width:350px; }
+.adu-dropzone.is-dragging { background:#213c31; border-color:#c8f478; }
+.adu-dropzone.is-disabled { opacity:.5; }
+.adu-dialog .adu-primary,.adu-dialog .adu-secondary { display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:8px; padding:10px 15px; min-height:42px; font-size:13px; font-weight:600; line-height:1.4; }
+.adu-dialog .adu-primary { background:#c8f478; border:1px solid #c8f478; color:#1b2c16; }
+.adu-dialog .adu-secondary { background:#172c35; border:1px solid #3c5c67; color:#d2e2e7; }
+.adu-dialog .adu-primary:hover:not(:disabled) { background:#d8ff95; }
+.adu-dialog .adu-secondary:hover:not(:disabled) { background:#233f49; border-color:#79a6b4; }
+.adu-dropzone .adu-secondary { margin-top:4px; }
+.adu-queue-heading { display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between; gap:7px; margin:19px 0 8px; font-size:11px; color:#91aab5; }
+.adu-queue-heading h4 { color:#d6e4e8; font-size:13px; }
+.adu-queue-heading h4 span { color:#819eaa; font-weight:400; }
+.adu-queue { padding:0; margin:0; list-style:none; }
+.adu-file { display:flex; align-items:flex-start; gap:10px; padding:13px 0; border-top:1px solid #243c47; }
+.adu-file-icon { color:#80adb9; flex-shrink:0; padding-top:5px; }
+.adu-file.is-success .adu-file-icon { color:#b4de83; }
+.adu-file.is-error .adu-file-icon,.adu-file.is-invalid .adu-file-icon,.adu-file.is-unknown .adu-file-icon { color:#f2b38f; }
+.adu-file-copy { flex:1; min-width:0; }
+.adu-file-copy>strong { display:block; font-size:13px; font-weight:500; overflow-wrap:anywhere; }
+.adu-file-copy small { display:block; font-size:11px; color:#92acb6; margin-top:3px; }
+.adu-file.is-success small { color:#b4de83; }
+.adu-file-copy p { font-size:12px; color:#edb99c; margin-top:5px; }
+.adu-file progress { display:block; width:100%; height:5px; margin-top:8px; accent-color:#bfe87a; }
+.adu-message,.adu-warning { padding:12px 14px; background:#172c35; color:#c7dfe5; border:1px solid #365c69; border-radius:9px; font-size:13px; margin-top:16px!important; overflow-wrap:anywhere; }
+.adu-warning { color:#f4c49d; background:#32281f; border-color:#6b5139; }
+.adu-footer { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:20px 28px; border-top:1px solid #35505b; background:#11232b; flex-shrink:0; }
+.adu-footer>div:first-child { flex:1; min-width:0; }
+.adu-footer>div>small { display:block; font-size:11px; color:#90a9b2; margin-top:7px; }
+.adu-footer p { font-size:13px; color:#c6d9df; }
+.adu-confirm { display:flex; align-items:flex-start; gap:10px; color:#c2d5dc; font-size:13px; cursor:pointer; overflow-wrap:anywhere; }
+.adu-confirm b { color:#d9f5af; }
+.adu-confirm input { flex-shrink:0; width:17px; height:17px; accent-color:#c8f478; margin:2px 0 0; }
+.adu-actions { display:flex; gap:9px; flex-shrink:0; }
+@media (max-width:760px) {
+ .adu-dialog { width:calc(100vw - 20px); max-height:calc(100dvh - 20px); border-radius:14px; }
+ .adu-header { padding:18px; gap:12px; }.adu-header h2 { font-size:21px; }.adu-heading-icon { display:none; }
+ .adu-body { grid-template-columns:1fr; }.adu-destinations { border-right:0; border-bottom:1px solid #29414a; padding:18px; }.adu-files { padding:18px; }
+ .adu-destination-list { max-height:180px; }.adu-step { margin-bottom:12px; }.adu-target strong { font-size:18px; }
+ .adu-footer { flex-direction:column; align-items:stretch; gap:12px; padding:15px 18px; }.adu-actions { justify-content:flex-end; }.adu-actions button { flex:1; }
+ .adu-footer>div>small { font-size:10px; }.adu-target>svg { display:none; }
+}
+@media (prefers-reduced-motion:reduce) { .adu-dropzone { transition:none; } }
